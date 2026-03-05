@@ -480,7 +480,7 @@ function Portfolio() {
       </div>
 
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.5rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
-        <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>Portfolio.</span>
+        <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>Ryan S. Carbonel.</span>
         <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s" }}>{l}</button>
@@ -494,10 +494,10 @@ function Portfolio() {
         <div style={{ position: "absolute", top: "20%", right: "10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, #c9a96e08 0%, transparent 70%)", pointerEvents: "none" }} />
         <p className="mono gold" style={{ fontSize: "0.7rem", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase" }}>— Full Stack Developer</p>
         <h1 className="serif" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", fontWeight: 300, lineHeight: 1.05, marginBottom: "2rem", maxWidth: 800 }}>
-          Building things<br /><em style={{ fontStyle: "italic", color: "#c9a96e" }}>for the web.</em>
+          Hi, I'm Ryan<br /><em style={{ fontStyle: "italic", color: "#c9a96e" }}>S. Carbonel.</em>
         </h1>
-        <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 400, lineHeight: 1.8, marginBottom: "3rem" }}>
-          I craft full stack applications with React & Node.js — from concept to deployment.
+        <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 500, lineHeight: 1.8, marginBottom: "3rem" }}>
+          Tech-savvy innovator with hands-on experience in emerging technologies and a passion for continuous improvement.
         </p>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button className="btn" onClick={() => scrollTo("projects")}>View Work</button>
@@ -512,7 +512,7 @@ function Portfolio() {
             <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
             <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {["React", "Node.js", "Express", "MongoDB", "PostgreSQL", "REST APIs", "Git"].map(s => (
+              {["React", "Node.js", "Express", "MongoDB", "JavaScript", "HTML & CSS", "REST APIs", "Git", "Vite"].map(s => (
                 <span key={s} className="tag" style={{ width: "fit-content" }}>{s}</span>
               ))}
             </div>
@@ -522,10 +522,10 @@ function Portfolio() {
               I build <em className="gold">meaningful</em> digital experiences.
             </h2>
             <p style={{ color: "#888", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", marginBottom: "1.5rem" }}>
-              I'm a full stack developer passionate about creating clean, performant web applications. I love turning complex problems into simple, elegant solutions using modern JavaScript technologies.
+              Tech-savvy innovator with hands-on experience in emerging technologies and passion for continuous improvement. Skilled in identifying opportunities for technological enhancements and implementing effective solutions.
             </p>
             <p style={{ color: "#666", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem" }}>
-              When I'm not coding, I'm writing about tech, contributing to open source, or exploring new frameworks. Currently open to exciting opportunities.
+              Adept at leveraging new tools and methods to solve problems and enhance productivity. Excels in adapting to fast-paced environments and driving technological advancements. Currently open to exciting opportunities.
             </p>
           </div>
         </div>
@@ -591,7 +591,7 @@ function Portfolio() {
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
           <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>04 / Contact</p>
           <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "1rem" }}>Let's talk.</h2>
-          <p className="mono" style={{ color: "#555", fontSize: "0.8rem", marginBottom: "3rem", lineHeight: 1.8 }}>Open to new opportunities, collaborations, or just a good conversation about tech.</p>
+          <p className="mono" style={{ color: "#555", fontSize: "0.8rem", marginBottom: "3rem", lineHeight: 1.8 }}>Open to new opportunities, collaborations, or just a good conversation about tech. Reach me at <span className="gold">ryancarbonel1984@gmail.com</span></p>
           {sent ? (
             <div style={{ border: "1px solid #c9a96e33", padding: "2rem", textAlign: "center" }}>
               <p className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>Message sent.</p>
@@ -608,16 +608,16 @@ function Portfolio() {
             </form>
           )}
           <div style={{ marginTop: "4rem", paddingTop: "2rem", borderTop: "1px solid #1a1a1a", display: "flex", gap: "2rem" }}>
-            {["GitHub", "LinkedIn", "Twitter"].map(s => (
-              <a key={s} href="#" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
-                onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>{s}</a>
-            ))}
+            <a href="https://github.com/Reffin" target="_blank" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
+              onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>GitHub</a>
+            <a href="https://web.facebook.com/ryan.s.carbonel" target="_blank" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
+              onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>Facebook</a>
           </div>
         </div>
       </Section>
 
       <footer style={{ padding: "2rem 3rem", borderTop: "1px solid #111", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span className="mono" style={{ color: "#333", fontSize: "0.65rem" }}>© 2026 — Portfolio</span>
+        <span className="mono" style={{ color: "#333", fontSize: "0.65rem" }}>© 2026 — Ryan S. Carbonel</span>
         <span className="mono gold" style={{ fontSize: "0.65rem" }}>Connected to API ✓</span>
       </footer>
     </div>
