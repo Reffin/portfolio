@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://portfolio-server-l1uk.onrender.com/api";
 
 // ── API helpers ───────────────────────────────────────────────
 const authHeaders = (token) => ({
