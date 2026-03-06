@@ -126,8 +126,7 @@ const STYLES = `
   .hamburger-btn { display: none !important; }
   @media (max-width: 640px) {
     .desktop-nav { display: none !important; }
-    .hamburger-btn { display: flex !important; }
-    .hero-section { padding: 8rem 1.5rem 3rem !important; }
+    .hamburger-btn { display: flex !important; width: auto !important; }
     .about-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
   }
 `;
@@ -521,7 +520,7 @@ function Portfolio() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="hamburger-btn"
-          style={{ background: "none", border: "none", cursor: "pointer", display: "none", flexDirection: "column", gap: "5px", padding: "4px" }}
+          style={{ background: "none", border: "none", cursor: "pointer", display: "none", flexDirection: "column", gap: "5px", padding: "4px", width: "auto", alignSelf: "center" }}
         >
           <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", transform: menuOpen ? "rotate(45deg) translate(4px, 4px)" : "none" }} />
           <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", opacity: menuOpen ? 0 : 1 }} />
@@ -538,7 +537,7 @@ function Portfolio() {
         )}
       </nav>
 
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 3rem", paddingTop: "6rem", position: "relative", overflow: "hidden" }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "8rem 3rem 3rem", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 79px, #ffffff05 80px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "20%", right: "10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, #c9a96e08 0%, transparent 70%)", pointerEvents: "none" }} />
         <p className="mono gold" style={{ fontSize: "0.7rem", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase" }}>— Full Stack Developer</p>
