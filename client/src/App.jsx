@@ -147,9 +147,10 @@ function Section({ id, children, style }) {
 
 // ── Login Page ────────────────────────────────────────────────
 function LoginPage({ onLogin }) {
-  const [form, setForm] = useState({ email: "admin@portfolio.com", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,7 +161,7 @@ function LoginPage({ onLogin }) {
       localStorage.setItem("admin_token", token);
       onLogin(token);
     } catch {
-      setError("Invalid credentials. Default password is: admin123");
+      setError("Invalid credentials.");
     } finally {
       setLoading(false);
     }
@@ -174,10 +175,27 @@ function LoginPage({ onLogin }) {
         {error && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem", marginBottom: "1rem", padding: "0.75rem", border: "1px solid #e0555533" }}>{error}</p>}
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <input className="input" type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-          <input className="input" type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
+          <div style={{ position: "relative" }}>
+            <input
+              className="input"
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+              required
+              style={{ paddingRight: "3rem" }}
+            />
+            <button
+              type="button"
+              onMouseEnter={() => setShowPassword(true)}
+              onMouseLeave={() => setShowPassword(false)}
+              style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#555", fontSize: "1rem", padding: "0.25rem" }}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
           <button className="btn" type="submit" disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
         </form>
-        <p className="mono" style={{ color: "#444", fontSize: "0.65rem", marginTop: "1rem" }}>Default: admin@portfolio.com / admin123</p>
       </div>
     </div>
   );
