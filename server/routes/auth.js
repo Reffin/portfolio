@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 const ADMIN = {
   email: "admin@portfolio.com",
-  passwordHash: "$2a$10$MMhZF3ue4QSTSzDnSMgoRu5BsPNfF9XUOeMHCaCy3zFKQ4G4zHEmy",
+  passwordHash: "$2a$10$HW8oevXcbyHphbWyRhtGPu0wNsUH7TpqciDPn1CXFL/EdEyRPeo9W",
 };
 
 router.post("/login", async (req, res) => {
