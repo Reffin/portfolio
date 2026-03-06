@@ -513,7 +513,6 @@ function Portfolio() {
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s", whiteSpace: "nowrap" }}>{l}</button>
           ))}
-
         </div>
 
         {/* Hamburger button - mobile only */}
@@ -522,22 +521,25 @@ function Portfolio() {
           className="hamburger-btn"
           style={{ background: "none", border: "none", cursor: "pointer", display: "none", flexDirection: "column", gap: "5px", padding: "4px", width: "auto", alignSelf: "center" }}
         >
-          <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", transform: menuOpen ? "rotate(45deg) translate(4px, 4px)" : "none" }} />
-          <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", opacity: menuOpen ? 0 : 1 }} />
-          <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", transform: menuOpen ? "rotate(-45deg) translate(4px, -4px)" : "none" }} />
+          <span style={{ display: "block", width: 22, height: 2, background: "#c9a96e", transition: "all 0.3s", transform: menuOpen ? "rotate(45deg) translate(0px, 7px)" : "none" }} />
+          <span style={{ display: "block", width: 22, height: 2, background: "#c9a96e", transition: "all 0.3s", opacity: menuOpen ? 0 : 1 }} />
+          <span style={{ display: "block", width: 22, height: 2, background: "#c9a96e", transition: "all 0.3s", transform: menuOpen ? "rotate(-45deg) translate(0px, -7px)" : "none" }} />
         </button>
-
-        {/* Mobile dropdown menu */}
-        {menuOpen && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#080808", zIndex: 9998, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "2rem" }} onClick={() => setMenuOpen(false)}>
-            <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300, marginBottom: "1rem" }}>Ryan S. Carbonel.</span>
-            {NAV_LINKS.map(l => (
-              <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#888", fontFamily: "'DM Mono', monospace", fontSize: "1rem", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", textAlign: "center", padding: "0.75rem 0" }}>{l}</button>
-            ))}
-            <button onClick={() => setMenuOpen(false)} className="mono" style={{ background: "none", border: "none", color: "#444", fontSize: "0.7rem", cursor: "pointer", marginTop: "1rem", letterSpacing: "0.1em" }}>✕ CLOSE</button>
-          </div>
-        )}
       </nav>
+
+      {/* Mobile fullscreen menu - outside nav */}
+      {menuOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#080808", zIndex: 99999, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "2.5rem" }}>
+          <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300, marginBottom: "1rem" }}>Ryan S. Carbonel.</span>
+          {NAV_LINKS.map(l => (
+            <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: "#888", fontFamily: "'DM Mono', monospace", fontSize: "1.1rem", letterSpacing: "0.25em", textTransform: "uppercase", cursor: "pointer", textAlign: "center", padding: "0.5rem 0", transition: "color 0.3s" }}
+              onMouseEnter={e => e.target.style.color = "#c9a96e"}
+              onMouseLeave={e => e.target.style.color = "#888"}
+            >{l}</button>
+          ))}
+          <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "1px solid #333", color: "#555", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", cursor: "pointer", marginTop: "1rem", padding: "0.5rem 1.5rem" }}>✕ CLOSE</button>
+        </div>
+      )}
 
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "8rem 3rem 3rem", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 79px, #ffffff05 80px)", pointerEvents: "none" }} />
