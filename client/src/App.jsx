@@ -122,6 +122,10 @@ const STYLES = `
   .admin-row:hover { background: #0f0f0f; }
   .modal-overlay { position: fixed; inset: 0; background: #000000cc; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .modal { background: #0f0f0f; border: 1px solid #222; padding: 2rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+  @media (max-width: 640px) {
+    .desktop-nav { display: none !important; }
+    .hamburger-btn { display: flex !important; }
+  }
 `;
 
 // ── Hooks ─────────────────────────────────────────────────────
@@ -444,6 +448,7 @@ function AdminDashboard({ token, onLogout }) {
 // ── Portfolio ─────────────────────────────────────────────────
 function Portfolio() {
   const [activeNav, setActiveNav] = useState("about");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -497,14 +502,36 @@ function Portfolio() {
         <div style={{ width: 32, height: 32, borderRadius: "50%", border: "1px solid #c9a96e", opacity: 0.6 }} />
       </div>
 
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.5rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
-        <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>Ryan S. Carbonel.</span>
-        <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.2rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#080808ee", backdropFilter: "blur(4px)", borderBottom: "1px solid #111" }}>
+        <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300, whiteSpace: "nowrap" }}>Ryan S. Carbonel.</span>
+
+        {/* Desktop menu */}
+        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "nowrap" }} className="desktop-nav">
           {NAV_LINKS.map(l => (
-            <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s" }}>{l}</button>
+            <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s", whiteSpace: "nowrap" }}>{l}</button>
           ))}
-          <a href="/admin" className="mono" style={{ color: "#2a2a2a", fontSize: "0.65rem" }}>admin</a>
+          <a href="/#admin" className="mono" style={{ color: "#2a2a2a", fontSize: "0.65rem" }}>admin</a>
         </div>
+
+        {/* Hamburger button - mobile only */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="hamburger-btn"
+          style={{ background: "none", border: "none", cursor: "pointer", display: "none", flexDirection: "column", gap: "5px", padding: "4px" }}
+        >
+          <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", transform: menuOpen ? "rotate(45deg) translate(4px, 4px)" : "none" }} />
+          <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", opacity: menuOpen ? 0 : 1 }} />
+          <span style={{ display: "block", width: 22, height: 1.5, background: menuOpen ? "#c9a96e" : "#888", transition: "all 0.3s", transform: menuOpen ? "rotate(-45deg) translate(4px, -4px)" : "none" }} />
+        </button>
+
+        {/* Mobile dropdown menu */}
+        {menuOpen && (
+          <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#080808", borderBottom: "1px solid #1a1a1a", padding: "1rem 2rem", display: "flex", flexDirection: "column", gap: "1rem" }} className="mobile-menu">
+            {NAV_LINKS.map(l => (
+              <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#888", fontFamily: "'DM Mono', monospace", fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", textAlign: "left", padding: "0.5rem 0" }}>{l}</button>
+            ))}
+          </div>
+        )}
       </nav>
 
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 3rem", position: "relative", overflow: "hidden" }}>
