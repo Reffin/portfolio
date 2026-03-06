@@ -529,9 +529,10 @@ function Portfolio() {
 
         {/* Mobile dropdown menu */}
         {menuOpen && (
-          <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#080808", borderBottom: "1px solid #1a1a1a", padding: "1rem 2rem", display: "flex", flexDirection: "column", gap: "1rem" }} className="mobile-menu">
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#080808f5", zIndex: 99, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "2rem" }} onClick={() => setMenuOpen(false)}>
+            <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300, marginBottom: "1rem" }}>Ryan S. Carbonel.</span>
             {NAV_LINKS.map(l => (
-              <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#888", fontFamily: "'DM Mono', monospace", fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", textAlign: "left", padding: "0.5rem 0" }}>{l}</button>
+              <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#888", fontFamily: "'DM Mono', monospace", fontSize: "1rem", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", textAlign: "center", padding: "0.5rem 0" }}>{l}</button>
             ))}
           </div>
         )}
