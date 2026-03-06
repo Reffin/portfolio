@@ -122,9 +122,13 @@ const STYLES = `
   .admin-row:hover { background: #0f0f0f; }
   .modal-overlay { position: fixed; inset: 0; background: #000000cc; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .modal { background: #0f0f0f; border: 1px solid #222; padding: 2rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+  .desktop-nav { display: flex !important; }
+  .hamburger-btn { display: none !important; }
   @media (max-width: 640px) {
     .desktop-nav { display: none !important; }
     .hamburger-btn { display: flex !important; }
+    .hero-section { padding: 8rem 1.5rem 3rem !important; }
+    .about-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
   }
 `;
 
@@ -510,7 +514,7 @@ function Portfolio() {
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s", whiteSpace: "nowrap" }}>{l}</button>
           ))}
-          <a href="/#admin" className="mono" style={{ color: "#2a2a2a", fontSize: "0.65rem" }}>admin</a>
+
         </div>
 
         {/* Hamburger button - mobile only */}
@@ -534,7 +538,7 @@ function Portfolio() {
         )}
       </nav>
 
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 3rem", position: "relative", overflow: "hidden" }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 3rem", paddingTop: "6rem", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 79px, #ffffff05 80px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "20%", right: "10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, #c9a96e08 0%, transparent 70%)", pointerEvents: "none" }} />
         <p className="mono gold" style={{ fontSize: "0.7rem", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase" }}>— Full Stack Developer</p>
