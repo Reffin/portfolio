@@ -505,7 +505,7 @@ function Portfolio() {
         <div style={{ width: 32, height: 32, borderRadius: "50%", border: "1px solid #c9a96e", opacity: 0.6 }} />
       </div>
 
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.2rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#080808ee", backdropFilter: "blur(4px)", borderBottom: "1px solid #111" }}>
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999, padding: "1.2rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#080808ee", backdropFilter: "blur(4px)", borderBottom: "1px solid #111" }}>
         <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300, whiteSpace: "nowrap" }}>Ryan S. Carbonel.</span>
 
         {/* Desktop menu */}
@@ -529,11 +529,12 @@ function Portfolio() {
 
         {/* Mobile dropdown menu */}
         {menuOpen && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#080808f5", zIndex: 99, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "2rem" }} onClick={() => setMenuOpen(false)}>
-            <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300, marginBottom: "1rem" }}>Ryan S. Carbonel.</span>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#080808", zIndex: 9998, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "2rem" }} onClick={() => setMenuOpen(false)}>
+            <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300, marginBottom: "1rem" }}>Ryan S. Carbonel.</span>
             {NAV_LINKS.map(l => (
-              <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#888", fontFamily: "'DM Mono', monospace", fontSize: "1rem", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", textAlign: "center", padding: "0.5rem 0" }}>{l}</button>
+              <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#888", fontFamily: "'DM Mono', monospace", fontSize: "1rem", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", textAlign: "center", padding: "0.75rem 0" }}>{l}</button>
             ))}
+            <button onClick={() => setMenuOpen(false)} className="mono" style={{ background: "none", border: "none", color: "#444", fontSize: "0.7rem", cursor: "pointer", marginTop: "1rem", letterSpacing: "0.1em" }}>✕ CLOSE</button>
           </div>
         )}
       </nav>
