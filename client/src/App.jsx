@@ -129,6 +129,18 @@ const STYLES = `
     .hamburger-btn { display: flex !important; width: auto !important; }
     .about-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
   }
+  .skill-bar-bg { background: #1a1a1a; border-radius: 2px; height: 4px; width: 100%; margin-top: 0.4rem; }
+  .skill-bar-fill { height: 4px; border-radius: 2px; background: linear-progress; transition: width 1.5s ease; }
+  .profile-photo { width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 2px solid #c9a96e44; }
+  .profile-placeholder { width: 220px; height: 220px; border-radius: 50%; background: linear-gradient(135deg, #1a1a1a, #0f0f0f); border: 2px solid #c9a96e44; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: #c9a96e44; }
+  .theme-toggle { background: none; border: 1px solid #333; color: #666; padding: 0.3rem 0.7rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.3s; border-radius: 2px; }
+  .theme-toggle:hover { border-color: #c9a96e; color: #c9a96e; }
+  .light-mode { background: #f5f0e8 !important; color: #1a1a1a !important; }
+  .light-mode nav { background: #f5f0e8ee !important; border-bottom-color: #e0d8cc !important; }
+  .light-mode .project-card { border-color: #e0d8cc !important; }
+  .light-mode .project-card:hover { background: #ede8df !important; }
+  .light-mode .input { background: #ede8df !important; border-color: #d0c8bc !important; color: #1a1a1a !important; }
+  .light-mode footer { border-top-color: #e0d8cc !important; }
 `;
 
 // ── Hooks ─────────────────────────────────────────────────────
@@ -452,6 +464,7 @@ function AdminDashboard({ token, onLogout }) {
 function Portfolio() {
   const [activeNav, setActiveNav] = useState("about");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -500,7 +513,7 @@ function Portfolio() {
   const formatDate = (d) => new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
   return (
-    <div style={{ background: "#080808", color: "#e8e0d5", fontFamily: "'Georgia', serif", minHeight: "100vh", overflowX: "hidden" }}>
+    <div className={darkMode ? "" : "light-mode"} style={{ background: darkMode ? "#080808" : "#f5f0e8", color: darkMode ? "#e8e0d5" : "#1a1a1a", fontFamily: "'Georgia', serif", minHeight: "100vh", overflowX: "hidden", transition: "background 0.3s, color 0.3s" }}>
       <div style={{ position: "fixed", top: 0, left: 0, pointerEvents: "none", zIndex: 9999, mixBlendMode: "difference", transform: `translate(${cursor.x - 16}px, ${cursor.y - 16}px)` }}>
         <div style={{ width: 32, height: 32, borderRadius: "50%", border: "1px solid #c9a96e", opacity: 0.6 }} />
       </div>
@@ -513,6 +526,7 @@ function Portfolio() {
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s", whiteSpace: "nowrap" }}>{l}</button>
           ))}
+          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)}>{darkMode ? "☀️ Light" : "🌙 Dark"}</button>
         </div>
 
         {/* Hamburger button - mobile only */}
@@ -551,34 +565,76 @@ function Portfolio() {
         <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 500, lineHeight: 1.8, marginBottom: "3rem" }}>
           Tech-savvy innovator with hands-on experience in emerging technologies and a passion for continuous improvement.
         </p>
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <button className="btn" onClick={() => scrollTo("projects")}>View Work</button>
           <button className="btn" onClick={() => scrollTo("contact")} style={{ borderColor: "#333", color: "#888" }}>Say Hello →</button>
+          <a href="/cv.pdf" download className="btn" style={{ borderColor: "#c9a96e44", color: "#c9a96e88", textDecoration: "none" }}>↓ Download CV</a>
         </div>
         <div className="mono" style={{ position: "absolute", bottom: "3rem", right: "3rem", fontSize: "0.65rem", color: "#333" }}>SCROLL ↓</div>
       </div>
 
       <Section id="about" style={{ padding: "8rem 3rem", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "5rem", alignItems: "start" }}>
-          <div>
-            <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
-            <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {["React", "Node.js", "Express", "MongoDB", "JavaScript", "HTML & CSS", "REST APIs", "Git", "Vite"].map(s => (
-                <span key={s} className="tag" style={{ width: "fit-content" }}>{s}</span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "5rem", alignItems: "start" }} className="about-grid">
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>
+            {/* Profile Photo */}
+            <div style={{ position: "relative" }}>
+              <img
+                src="/profile.jpg"
+                alt="Ryan S. Carbonel"
+                className="profile-photo"
+                onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+              />
+              <div className="profile-placeholder" style={{ display: "none" }}>RC</div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <p className="serif gold" style={{ fontSize: "1.1rem", fontWeight: 300 }}>Ryan S. Carbonel</p>
+              <p className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.15em", marginTop: "0.3rem" }}>FULL STACK DEVELOPER</p>
+            </div>
+            {/* Skill Progress Bars */}
+            <div style={{ width: "100%" }}>
+              <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem" }}>Skills</p>
+              {[
+                { name: "React", level: 80 },
+                { name: "Node.js", level: 75 },
+                { name: "MongoDB", level: 70 },
+                { name: "JavaScript", level: 85 },
+                { name: "HTML & CSS", level: 90 },
+                { name: "REST APIs", level: 75 },
+                { name: "Git", level: 70 },
+              ].map(s => (
+                <div key={s.name} style={{ marginBottom: "0.9rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.3rem" }}>
+                    <span className="mono" style={{ fontSize: "0.65rem", color: "#888" }}>{s.name}</span>
+                    <span className="mono" style={{ fontSize: "0.65rem", color: "#555" }}>{s.level}%</span>
+                  </div>
+                  <div className="skill-bar-bg">
+                    <div style={{ width: `${s.level}%`, height: 4, borderRadius: 2, background: "linear-gradient(to right, #c9a96e, #e8c98a)", transition: "width 1.5s ease" }} />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
           <div>
+            <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
+            <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
             <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "2rem", lineHeight: 1.2 }}>
               I build <em className="gold">meaningful</em> digital experiences.
             </h2>
             <p style={{ color: "#888", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", marginBottom: "1.5rem" }}>
               Tech-savvy innovator with hands-on experience in emerging technologies and passion for continuous improvement. Skilled in identifying opportunities for technological enhancements and implementing effective solutions.
             </p>
-            <p style={{ color: "#666", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem" }}>
+            <p style={{ color: "#666", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", marginBottom: "2rem" }}>
               Adept at leveraging new tools and methods to solve problems and enhance productivity. Excels in adapting to fast-paced environments and driving technological advancements. Currently open to exciting opportunities.
             </p>
+            {/* Stats */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", borderTop: "1px solid #1a1a1a", paddingTop: "2rem" }}>
+              {[{ num: "3+", label: "Projects" }, { num: "1+", label: "Years Learning" }, { num: "5+", label: "Technologies" }].map(s => (
+                <div key={s.label} style={{ textAlign: "center" }}>
+                  <p className="serif gold" style={{ fontSize: "2rem", fontWeight: 300 }}>{s.num}</p>
+                  <p className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.1em", marginTop: "0.3rem" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Section>
