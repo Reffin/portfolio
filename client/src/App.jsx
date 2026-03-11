@@ -465,6 +465,7 @@ function Portfolio() {
   const [activeNav, setActiveNav] = useState("about");
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -683,7 +684,7 @@ function Portfolio() {
                 <div className="skeleton" style={{ height: 12, width: "20%" }} />
               </div>
             )) : posts.map(post => (
-              <div key={post._id} className="blog-card" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "2rem" }}>
+              <div key={post._id} className="blog-card" onClick={() => { setSelectedPost(post); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "2rem" }}>
                 <div>
                   <h3 className="serif" style={{ fontSize: "1.4rem", fontWeight: 400, marginBottom: "0.5rem" }}>{post.title}</h3>
                   <span className="mono" style={{ color: "#555", fontSize: "0.7rem" }}>{formatDate(post.createdAt)}</span>
@@ -728,6 +729,32 @@ function Portfolio() {
         <span className="mono" style={{ color: "#333", fontSize: "0.65rem" }}>© 2026 — Ryan S. Carbonel</span>
         <span className="mono gold" style={{ fontSize: "0.65rem" }}>Connected to API ✓</span>
       </footer>
+
+      {/* Blog Post Detail View */}
+      {selectedPost && (
+        <div style={{ position: "fixed", inset: 0, background: darkMode ? "#080808" : "#f5f0e8", zIndex: 99999, overflowY: "auto", padding: "6rem 2rem 4rem" }}>
+          <div style={{ maxWidth: 720, margin: "0 auto" }}>
+            <button onClick={() => setSelectedPost(null)} className="mono" style={{ background: "none", border: "none", color: "#c9a96e", cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.1em", marginBottom: "3rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>← Back to Portfolio</button>
+            <p className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1rem" }}>
+              {formatDate(selectedPost.createdAt)} · {selectedPost.readTime || "5 min"} read
+            </p>
+            <h1 className="serif" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 300, lineHeight: 1.2, marginBottom: "1rem" }}>{selectedPost.title}</h1>
+            {selectedPost.tags?.length > 0 && (
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "3rem" }}>
+                {selectedPost.tags.map(t => <span key={t} className="tag">{t}</span>)}
+              </div>
+            )}
+            <div style={{ borderTop: "1px solid #1a1a1a", paddingTop: "3rem" }}>
+              {selectedPost.content?.split("\n").filter(p => p.trim()).map((para, i) => (
+                <p key={i} style={{ color: darkMode ? "#888" : "#444", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", marginBottom: "1.5rem" }}>{para}</p>
+              ))}
+            </div>
+            <div style={{ borderTop: "1px solid #1a1a1a", paddingTop: "2rem", marginTop: "2rem" }}>
+              <button onClick={() => setSelectedPost(null)} className="btn">← Back to Portfolio</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
