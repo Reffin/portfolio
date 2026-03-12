@@ -2,6 +2,15 @@ const router   = require("express").Router();
 const Contact  = require("../models/Contact");
 const auth     = require("../middleware/auth");
 const nodemailer = require("nodemailer");
+const rateLimit = require("express-rate-limit");
+
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // max 5 messages per hour per IP
+  message: { error: "Too many messages sent. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -19,12 +28,24 @@ const transporter = nodemailer.createTransport({
   socketTimeout: 5000,
 });
 
+// Simple sanitize function
+function sanitize(str) {
+  return String(str).trim().replace(/[<>]/g, "");
+}
+
 // POST /api/contact - public
-router.post("/", async (req, res) => {
+router.post("/", contactLimiter, async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const name    = sanitize(req.body.name || "");
+    const email   = sanitize(req.body.email || "");
+    const message = sanitize(req.body.message || "");
+
     if (!name || !email || !message) {
       return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (name.length > 100 || email.length > 200 || message.length > 2000) {
+      return res.status(400).json({ error: "Input too long" });
     }
 
     // Always save to MongoDB first
