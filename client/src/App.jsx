@@ -170,6 +170,10 @@ function LoginPage({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotMsg, setForgotMsg] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -185,6 +189,42 @@ function LoginPage({ onLogin }) {
       setLoading(false);
     }
   };
+
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setForgotMsg("");
+    try {
+      const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setForgotMsg(data.message);
+    } catch (err) {
+      setForgotMsg(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  if (showForgot) return (
+    <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+      <div style={{ width: "100%", maxWidth: 400 }}>
+        <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>Admin Access</p>
+        <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "0.5rem" }}>Reset Password</h1>
+        <p className="mono" style={{ color: "#555", fontSize: "0.75rem", marginBottom: "2rem" }}>Enter your email and we'll send you a reset link.</p>
+        {forgotMsg && <p className="mono" style={{ color: forgotMsg.includes("registered") ? "#c9a96e" : "#e05555", fontSize: "0.75rem", marginBottom: "1rem", padding: "0.75rem", border: `1px solid ${forgotMsg.includes("registered") ? "#c9a96e33" : "#e0555533"}` }}>{forgotMsg}</p>}
+        <form onSubmit={handleForgot} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <input className="input" type="email" placeholder="Your email" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
+          <button className="btn" type="submit" disabled={forgotLoading}>{forgotLoading ? "Sending..." : "Send Reset Link"}</button>
+          <button type="button" onClick={() => setShowForgot(false)} className="mono" style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "0.75rem", textAlign: "left" }}>← Back to Sign In</button>
+        </form>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
@@ -214,7 +254,66 @@ function LoginPage({ onLogin }) {
             </button>
           </div>
           <button className="btn" type="submit" disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
+          <button type="button" onClick={() => setShowForgot(true)} className="mono" style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "0.75rem", textAlign: "left" }}>Forgot password?</button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+// ── Reset Password Page ───────────────────────────────────────
+function ResetPasswordPage() {
+  const token = new URLSearchParams(window.location.hash.split("?")[1]).get("token");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [msg, setMsg] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleReset = async (e) => {
+    e.preventDefault();
+    if (password !== confirm) return setError("Passwords do not match");
+    if (password.length < 8) return setError("Password must be at least 8 characters");
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${BASE_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setMsg(data.message);
+      setDone(true);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+      <div style={{ width: "100%", maxWidth: 400 }}>
+        <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>Admin Access</p>
+        <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "0.5rem" }}>New Password</h1>
+        <p className="mono" style={{ color: "#555", fontSize: "0.75rem", marginBottom: "2rem" }}>Enter your new password below.</p>
+        {done ? (
+          <div style={{ border: "1px solid #c9a96e33", padding: "1.5rem" }}>
+            <p className="mono" style={{ color: "#c9a96e", fontSize: "0.85rem", marginBottom: "1rem" }}>{msg}</p>
+            <a href="/#admin" className="btn" style={{ display: "inline-block", textDecoration: "none" }}>Go to Sign In</a>
+          </div>
+        ) : (
+          <form onSubmit={handleReset} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {error && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem", padding: "0.75rem", border: "1px solid #e0555533" }}>{error}</p>}
+            <input className="input" type="password" placeholder="New password (min 8 chars)" value={password} onChange={e => setPassword(e.target.value)} required />
+            <input className="input" type="password" placeholder="Confirm new password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
+            <button className="btn" type="submit" disabled={loading || !token}>{loading ? "Resetting..." : "Reset Password"}</button>
+            {!token && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem" }}>Invalid reset link. Please request a new one.</p>}
+          </form>
+        )}
       </div>
     </div>
   );
@@ -764,12 +863,15 @@ export default function App() {
   const [token, setToken] = useState(localStorage.getItem("admin_token"));
   const isAdmin = window.location.pathname === "/admin" ||
                   window.location.hash === "#admin";
+  const isReset = window.location.hash.startsWith("#reset-password");
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     setToken(null);
     window.location.href = "/";
   };
+
+  if (isReset) return <><style>{STYLES}</style><ResetPasswordPage /></>;
 
   if (isAdmin) {
     if (!token) return <><style>{STYLES}</style><LoginPage onLogin={setToken} /></>;
