@@ -86,8 +86,9 @@ router.post("/forgot-password", resetLimiter, async (req, res) => {
         `,
       });
     } catch (emailErr) {
-      console.error("Reset email error:", emailErr.message);
-      return res.status(500).json({ error: "Failed to send reset email. Please try again." });
+      console.error("Reset email error (token still saved):", emailErr.message);
+      // Log the reset URL to server logs as fallback
+      console.log("Reset URL:", resetUrl);
     }
     res.json({ message: "If that email is registered, you will receive a reset link." });
   } catch (err) {
