@@ -2,9 +2,9 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const ResetToken = require("../models/ResetToken");
+const Brevo = require("@getbrevo/brevo");
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -22,18 +22,18 @@ const resetLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+async function sendEmail(to, subject, html) {
+  const apiInstance = new Brevo.TransactionalEmailsApi();
+  apiInstance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
+
+  const email = new Brevo.SendSmtpEmail();
+  email.sender = { name: "Ryan S. Carbonel", email: "ryancarbonel1984@gmail.com" };
+  email.to = [{ email: to }];
+  email.subject = subject;
+  email.htmlContent = html;
+
+  return apiInstance.sendTransacEmail(email);
+}
 
 let ADMIN = {
   email: "ryancarbonel1984@gmail.com",
@@ -70,11 +70,10 @@ router.post("/forgot-password", resetLimiter, async (req, res) => {
     await ResetToken.create({ token, expiresAt });
     const resetUrl = `${process.env.CLIENT_URL}/#reset-password?token=${token}`;
     try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: ADMIN.email,
-        subject: "Portfolio Admin — Password Reset",
-        html: `
+      await sendEmail(
+        ADMIN.email,
+        "Portfolio Admin — Password Reset",
+        `
           <h2>Password Reset Request</h2>
           <p>Click the link below to reset your password. Expires in <strong>1 hour</strong>.</p>
           <br/>
@@ -82,11 +81,11 @@ router.post("/forgot-password", resetLimiter, async (req, res) => {
           <br/><br/>
           <p style="color:#888;font-size:12px;">If you did not request this, ignore this email.</p>
           <p style="color:#888;font-size:12px;">Link: ${resetUrl}</p>
-        `,
-      });
+        `
+      );
+      console.log("Reset email sent successfully!");
     } catch (emailErr) {
       console.error("Reset email error (token still saved):", emailErr.message);
-      // Log the reset URL to server logs as fallback
       console.log("Reset URL:", resetUrl);
     }
     res.json({ message: "If that email is registered, you will receive a reset link." });

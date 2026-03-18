@@ -1,31 +1,30 @@
 const router   = require("express").Router();
 const Contact  = require("../models/Contact");
 const auth     = require("../middleware/auth");
-const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
+const Brevo = require("@getbrevo/brevo");
 
 const contactLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // max 5 messages per hour per IP
+  windowMs: 60 * 60 * 1000,
+  max: 5,
   message: { error: "Too many messages sent. Please try again later." },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+async function sendEmail(to, subject, html) {
+  const apiInstance = new Brevo.TransactionalEmailsApi();
+  apiInstance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
 
-// Simple sanitize function
+  const email = new Brevo.SendSmtpEmail();
+  email.sender = { name: "Ryan S. Carbonel Portfolio", email: "ryancarbonel1984@gmail.com" };
+  email.to = [{ email: to }];
+  email.subject = subject;
+  email.htmlContent = html;
+
+  return apiInstance.sendTransacEmail(email);
+}
+
 function sanitize(str) {
   return String(str).trim().replace(/[<>]/g, "");
 }
@@ -40,42 +39,35 @@ router.post("/", contactLimiter, async (req, res) => {
     if (!name || !email || !message) {
       return res.status(400).json({ error: "All fields are required" });
     }
-
     if (name.length > 100 || email.length > 200 || message.length > 2000) {
       return res.status(400).json({ error: "Input too long" });
     }
 
-    // Always save to MongoDB first
     await Contact.create({ name, email, message });
 
-    // Try to send email - but don't fail if it doesn't work
     try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER,
-        subject: `New message from ${name}`,
-        html: `
+      await sendEmail(
+        process.env.ADMIN_EMAIL || "ryancarbonel1984@gmail.com",
+        `New message from ${name}`,
+        `
           <h2>New Portfolio Message</h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Message:</strong></p>
           <p>${message}</p>
-        `,
-      });
-
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Thanks for reaching out!",
-        html: `
+        `
+      );
+      await sendEmail(
+        email,
+        "Thanks for reaching out!",
+        `
           <h2>Hey ${name}!</h2>
           <p>Thanks for your message. I received it and will get back to you soon!</p>
           <br/>
           <p>— Ryan S. Carbonel</p>
-        `,
-      });
+        `
+      );
     } catch (emailErr) {
-      // Email failed but message was saved - log it and continue
       console.error("Email error (message still saved):", emailErr.message);
     }
 
