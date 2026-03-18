@@ -2,7 +2,6 @@ const router   = require("express").Router();
 const Contact  = require("../models/Contact");
 const auth     = require("../middleware/auth");
 const rateLimit = require("express-rate-limit");
-const Brevo = require("@getbrevo/brevo");
 
 const contactLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -13,16 +12,24 @@ const contactLimiter = rateLimit({
 });
 
 async function sendEmail(to, subject, html) {
-  const apiInstance = new Brevo.TransactionalEmailsApi();
-  apiInstance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
-
-  const email = new Brevo.SendSmtpEmail();
-  email.sender = { name: "Ryan S. Carbonel Portfolio", email: "ryancarbonel1984@gmail.com" };
-  email.to = [{ email: to }];
-  email.subject = subject;
-  email.htmlContent = html;
-
-  return apiInstance.sendTransacEmail(email);
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: "Ryan S. Carbonel Portfolio", email: "ryancarbonel1984@gmail.com" },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(err);
+  }
+  return response.json();
 }
 
 function sanitize(str) {
@@ -47,7 +54,7 @@ router.post("/", contactLimiter, async (req, res) => {
 
     try {
       await sendEmail(
-        process.env.ADMIN_EMAIL || "ryancarbonel1984@gmail.com",
+        "ryancarbonel1984@gmail.com",
         `New message from ${name}`,
         `
           <h2>New Portfolio Message</h2>

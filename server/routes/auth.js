@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const rateLimit = require("express-rate-limit");
 const ResetToken = require("../models/ResetToken");
-const Brevo = require("@getbrevo/brevo");
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -23,16 +22,24 @@ const resetLimiter = rateLimit({
 });
 
 async function sendEmail(to, subject, html) {
-  const apiInstance = new Brevo.TransactionalEmailsApi();
-  apiInstance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
-
-  const email = new Brevo.SendSmtpEmail();
-  email.sender = { name: "Ryan S. Carbonel", email: "ryancarbonel1984@gmail.com" };
-  email.to = [{ email: to }];
-  email.subject = subject;
-  email.htmlContent = html;
-
-  return apiInstance.sendTransacEmail(email);
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: "Ryan S. Carbonel", email: "ryancarbonel1984@gmail.com" },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(err);
+  }
+  return response.json();
 }
 
 let ADMIN = {
