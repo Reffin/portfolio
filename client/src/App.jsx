@@ -303,7 +303,7 @@ function ResetPasswordPage() {
         {done ? (
           <div style={{ border: "1px solid #c9a96e33", padding: "1.5rem" }}>
             <p className="mono" style={{ color: "#c9a96e", fontSize: "0.85rem", marginBottom: "1rem" }}>{msg}</p>
-            <a href="/#admin" className="btn" style={{ display: "inline-block", textDecoration: "none" }}>Go to Sign In</a>
+          <button onClick={() => window.location.href = "/#admin"} className="btn" style={{ cursor: "pointer" }}>Go to Sign In</button>
           </div>
         ) : (
           <form onSubmit={handleReset} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
