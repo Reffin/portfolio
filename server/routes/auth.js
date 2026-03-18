@@ -23,22 +23,21 @@ const resetLimiter = rateLimit({
 });
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  tls: { rejectUnauthorized: false },
-  connectionTimeout: 5000,
-  greetingTimeout: 5000,
-  socketTimeout: 5000,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
 let ADMIN = {
   email: "ryancarbonel1984@gmail.com",
-  passwordHash: "$2a$10$KbJYEGZuxo5MLvThFDbcWOf6nXc6Dn5SSwmia4/BbBzCs9zhbdj9q",
+  passwordHash: "$2a$10$.qtAqqMRmTY.2dRYF18bj.oK06NUMgQCL/AdQAnxCfVBHV5Qlho6e",
 };
 
 // POST /api/auth/login
