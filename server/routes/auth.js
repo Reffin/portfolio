@@ -44,7 +44,7 @@ async function sendEmail(to, subject, html) {
 
 let ADMIN = {
   email: "ryancarbonel1984@gmail.com",
-  passwordHash: "$2a$10$bHI0dIazh9cbSXroofdKK.PC59fvq8TMYbuieFRlZvT63sOjZeztW",
+  passwordHash: "$2a$10$zbvEbV4RNCi5yjzu04cDCu4MpMMLmY.4kcFRWg/vToipK4AIRqoYy",
 };
 
 // POST /api/auth/login
