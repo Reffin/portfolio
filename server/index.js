@@ -5,30 +5,32 @@ require("dotenv").config();
 
 const app = express();
 
-// Trust Render's proxy
+// Trust proxy
 app.set("trust proxy", 1);
+
+// ── Middleware ────────────────────────────────────────────────
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json());
 
-// ─── Routes ──────────────────────────────────────────────────
+// ── Routes ───────────────────────────────────────────────────
 app.use("/api/auth",     require("./routes/auth"));
 app.use("/api/projects", require("./routes/projects"));
 app.use("/api/posts",    require("./routes/posts"));
 app.use("/api/contact",  require("./routes/contact"));
 
-// ─── Health check ────────────────────────────────────────────
+// ── Health check ─────────────────────────────────────────────
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
-// ─── 404 handler ─────────────────────────────────────────────
+// ── 404 handler ──────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 
-// ─── Error handler ───────────────────────────────────────────
+// ── Error handler ────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Something went wrong" });
 });
 
-// ─── Connect DB & Start Server ───────────────────────────────
+// ── Connect DB & Start Server ────────────────────────────────
 const PORT = process.env.PORT || 5000;
 
 mongoose
