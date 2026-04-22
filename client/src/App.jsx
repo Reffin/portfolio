@@ -610,7 +610,7 @@ function Portfolio() {
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem("admin_token"));
-  const isAdmin = window.location.pathname === "/admin";
+  const isAdmin = window.location.hash === "#admin" || window.location.pathname === "/admin";
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
