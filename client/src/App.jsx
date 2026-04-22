@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 
 const BASE_URL = "https://portfolio-server-l1uk.onrender.com/api";
 
-// ── API helpers ───────────────────────────────────────────────
 const authHeaders = (token) => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${token}`,
@@ -79,7 +78,6 @@ async function deletePost(id, token) {
   return res.json();
 }
 
-// ── Fallback data ─────────────────────────────────────────────
 const FALLBACK_PROJECTS = [
   { _id: "f1", title: "E-Commerce App", tech: ["React", "Node.js", "MongoDB"], description: "Full stack store with cart, auth, and payments." },
   { _id: "f2", title: "Weather Dashboard", tech: ["React", "API"], description: "Real-time weather with beautiful data visualizations." },
@@ -122,28 +120,8 @@ const STYLES = `
   .admin-row:hover { background: #0f0f0f; }
   .modal-overlay { position: fixed; inset: 0; background: #000000cc; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .modal { background: #0f0f0f; border: 1px solid #222; padding: 2rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
-  .desktop-nav { display: flex !important; }
-  .hamburger-btn { display: none !important; }
-  @media (max-width: 640px) {
-    .desktop-nav { display: none !important; }
-    .hamburger-btn { display: flex !important; width: auto !important; }
-    .about-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
-  }
-  .skill-bar-bg { background: #1a1a1a; border-radius: 2px; height: 4px; width: 100%; margin-top: 0.4rem; }
-  .skill-bar-fill { height: 4px; border-radius: 2px; background: linear-progress; transition: width 1.5s ease; }
-  .profile-photo { width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 2px solid #c9a96e44; }
-  .profile-placeholder { width: 220px; height: 220px; border-radius: 50%; background: linear-gradient(135deg, #1a1a1a, #0f0f0f); border: 2px solid #c9a96e44; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: #c9a96e44; }
-  .theme-toggle { background: none; border: 1px solid #333; color: #666; padding: 0.3rem 0.7rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.3s; border-radius: 2px; }
-  .theme-toggle:hover { border-color: #c9a96e; color: #c9a96e; }
-  .light-mode { background: #f5f0e8 !important; color: #1a1a1a !important; }
-  .light-mode nav { background: #f5f0e8ee !important; border-bottom-color: #e0d8cc !important; }
-  .light-mode .project-card { border-color: #e0d8cc !important; }
-  .light-mode .project-card:hover { background: #ede8df !important; }
-  .light-mode .input { background: #ede8df !important; border-color: #d0c8bc !important; color: #1a1a1a !important; }
-  .light-mode footer { border-top-color: #e0d8cc !important; }
 `;
 
-// ── Hooks ─────────────────────────────────────────────────────
 function useInView(ref) {
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -164,16 +142,10 @@ function Section({ id, children, style }) {
   );
 }
 
-// ── Login Page ────────────────────────────────────────────────
 function LoginPage({ onLogin }) {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "ryancarbonel1984@gmail.com", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotMsg, setForgotMsg] = useState("");
-  const [forgotLoading, setForgotLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -190,42 +162,6 @@ function LoginPage({ onLogin }) {
     }
   };
 
-  const handleForgot = async (e) => {
-    e.preventDefault();
-    setForgotLoading(true);
-    setForgotMsg("");
-    try {
-      const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setForgotMsg(data.message);
-    } catch (err) {
-      setForgotMsg(err.message || "Something went wrong. Please try again.");
-    } finally {
-      setForgotLoading(false);
-    }
-  };
-
-  if (showForgot) return (
-    <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-      <div style={{ width: "100%", maxWidth: 400 }}>
-        <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>Admin Access</p>
-        <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "0.5rem" }}>Reset Password</h1>
-        <p className="mono" style={{ color: "#555", fontSize: "0.75rem", marginBottom: "2rem" }}>Enter your email and we'll send you a reset link.</p>
-        {forgotMsg && <p className="mono" style={{ color: forgotMsg.includes("registered") ? "#c9a96e" : "#e05555", fontSize: "0.75rem", marginBottom: "1rem", padding: "0.75rem", border: `1px solid ${forgotMsg.includes("registered") ? "#c9a96e33" : "#e0555533"}` }}>{forgotMsg}</p>}
-        <form onSubmit={handleForgot} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <input className="input" type="email" placeholder="Your email" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
-          <button className="btn" type="submit" disabled={forgotLoading}>{forgotLoading ? "Sending..." : "Send Reset Link"}</button>
-          <button type="button" onClick={() => setShowForgot(false)} className="mono" style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "0.75rem", textAlign: "left" }}>← Back to Sign In</button>
-        </form>
-      </div>
-    </div>
-  );
-
   return (
     <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
       <div style={{ width: "100%", maxWidth: 400 }}>
@@ -234,92 +170,14 @@ function LoginPage({ onLogin }) {
         {error && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem", marginBottom: "1rem", padding: "0.75rem", border: "1px solid #e0555533" }}>{error}</p>}
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <input className="input" type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-          <div style={{ position: "relative" }}>
-            <input
-              className="input"
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })}
-              required
-              style={{ paddingRight: "3rem" }}
-            />
-            <button
-              type="button"
-              onMouseEnter={() => setShowPassword(true)}
-              onMouseLeave={() => setShowPassword(false)}
-              style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#555", fontSize: "1rem", padding: "0.25rem" }}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
-          </div>
+          <input className="input" type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
           <button className="btn" type="submit" disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
-          <button type="button" onClick={() => setShowForgot(true)} className="mono" style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "0.75rem", textAlign: "left" }}>Forgot password?</button>
         </form>
       </div>
     </div>
   );
 }
 
-// ── Reset Password Page ───────────────────────────────────────
-function ResetPasswordPage() {
-  const token = new URLSearchParams(window.location.hash.split("?")[1]).get("token");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [msg, setMsg] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
-
-  const handleReset = async (e) => {
-    e.preventDefault();
-    if (password !== confirm) return setError("Passwords do not match");
-    if (password.length < 8) return setError("Password must be at least 8 characters");
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(`${BASE_URL}/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setMsg(data.message);
-      setDone(true);
-    } catch (err) {
-      setError(err.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-      <div style={{ width: "100%", maxWidth: 400 }}>
-        <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>Admin Access</p>
-        <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "0.5rem" }}>New Password</h1>
-        <p className="mono" style={{ color: "#555", fontSize: "0.75rem", marginBottom: "2rem" }}>Enter your new password below.</p>
-        {done ? (
-          <div style={{ border: "1px solid #c9a96e33", padding: "1.5rem" }}>
-            <p className="mono" style={{ color: "#c9a96e", fontSize: "0.85rem", marginBottom: "1rem" }}>{msg}</p>
-          <button onClick={() => { window.location.href = "/#admin"; window.location.reload(); }} className="btn" style={{ cursor: "pointer" }}>Go to Sign In</button>
-          </div>
-        ) : (
-          <form onSubmit={handleReset} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {error && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem", padding: "0.75rem", border: "1px solid #e0555533" }}>{error}</p>}
-            <input className="input" type="password" placeholder="New password (min 8 chars)" value={password} onChange={e => setPassword(e.target.value)} required />
-            <input className="input" type="password" placeholder="Confirm new password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
-            <button className="btn" type="submit" disabled={loading || !token}>{loading ? "Resetting..." : "Reset Password"}</button>
-            {!token && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem" }}>Invalid reset link. Please request a new one.</p>}
-          </form>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Project Modal ─────────────────────────────────────────────
 function ProjectModal({ project, token, onSave, onClose }) {
   const [form, setForm] = useState(project || { title: "", description: "", tech: "", link: "", github: "", featured: false });
   const [loading, setLoading] = useState(false);
@@ -363,7 +221,6 @@ function ProjectModal({ project, token, onSave, onClose }) {
   );
 }
 
-// ── Post Modal ────────────────────────────────────────────────
 function PostModal({ post, token, onSave, onClose }) {
   const [form, setForm] = useState(post || { title: "", content: "", excerpt: "", tags: "", readTime: "", published: false });
   const [loading, setLoading] = useState(false);
@@ -407,7 +264,6 @@ function PostModal({ post, token, onSave, onClose }) {
   );
 }
 
-// ── Admin Dashboard ───────────────────────────────────────────
 function AdminDashboard({ token, onLogout }) {
   const [tab, setTab] = useState("projects");
   const [projects, setProjects] = useState([]);
@@ -449,7 +305,6 @@ function AdminDashboard({ token, onLogout }) {
       {projectModal && <ProjectModal project={projectModal === true ? null : projectModal} token={token} onSave={() => { setProjectModal(false); fetchAll(); }} onClose={() => setProjectModal(false)} />}
       {postModal && <PostModal post={postModal === true ? null : postModal} token={token} onSave={() => { setPostModal(false); fetchAll(); }} onClose={() => setPostModal(false)} />}
 
-      {/* Header */}
       <div style={{ padding: "1.5rem 2rem", borderBottom: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <span className="serif gold" style={{ fontSize: "1.3rem", fontWeight: 300 }}>Admin</span>
@@ -461,7 +316,6 @@ function AdminDashboard({ token, onLogout }) {
         </div>
       </div>
 
-      {/* Tabs */}
       <div style={{ padding: "0 2rem", borderBottom: "1px solid #1a1a1a", display: "flex" }}>
         {["projects", "posts", "messages"].map(t => (
           <button key={t} onClick={() => setTab(t)} className="mono" style={{ background: "none", border: "none", borderBottom: tab === t ? "2px solid #c9a96e" : "2px solid transparent", color: tab === t ? "#c9a96e" : "#555", padding: "1rem 1.5rem", fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.2s" }}>
@@ -470,7 +324,6 @@ function AdminDashboard({ token, onLogout }) {
         ))}
       </div>
 
-      {/* Content */}
       <div style={{ padding: "2rem", maxWidth: 900, margin: "0 auto" }}>
         {loading ? (
           <p className="mono" style={{ color: "#444", fontSize: "0.75rem", textAlign: "center", padding: "4rem" }}>Loading...</p>
@@ -559,16 +412,11 @@ function AdminDashboard({ token, onLogout }) {
   );
 }
 
-// ── Portfolio ─────────────────────────────────────────────────
 function Portfolio() {
   const [activeNav, setActiveNav] = useState("about");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
-  const [selectedPost, setSelectedPost] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const [projects, setProjects] = useState(FALLBACK_PROJECTS);
   const [posts, setPosts] = useState(FALLBACK_POSTS);
   const [loadingProjects, setLoadingProjects] = useState(true);
@@ -577,12 +425,6 @@ function Portfolio() {
   useEffect(() => {
     getProjects().then(data => { if (data?.length > 0) setProjects(data); }).catch(() => {}).finally(() => setLoadingProjects(false));
     getPosts().then(data => { if (data?.length > 0) setPosts(data); }).catch(() => {}).finally(() => setLoadingPosts(false));
-  }, []);
-
-  useEffect(() => {
-    const move = (e) => setCursor({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
   }, []);
 
   useEffect(() => {
@@ -613,132 +455,64 @@ function Portfolio() {
   const formatDate = (d) => new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
   return (
-    <div className={darkMode ? "" : "light-mode"} style={{ background: darkMode ? "#080808" : "#f5f0e8", color: darkMode ? "#e8e0d5" : "#1a1a1a", fontFamily: "'Georgia', serif", minHeight: "100vh", overflowX: "hidden", transition: "background 0.3s, color 0.3s" }}>
-      <div style={{ position: "fixed", top: 0, left: 0, pointerEvents: "none", zIndex: 9999, mixBlendMode: "difference", transform: `translate(${cursor.x - 16}px, ${cursor.y - 16}px)` }}>
-        <div style={{ width: 32, height: 32, borderRadius: "50%", border: "1px solid #c9a96e", opacity: 0.6 }} />
-      </div>
+    <div style={{ background: "#080808", color: "#e8e0d5", fontFamily: "'Georgia', serif", minHeight: "100vh", overflowX: "hidden" }}>
 
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999, padding: "1.2rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#080808ee", backdropFilter: "blur(4px)", borderBottom: "1px solid #111" }}>
-        <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300, whiteSpace: "nowrap" }}>Ryan S. Carbonel.</span>
-
-        {/* Desktop menu */}
-        <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "nowrap" }} className="desktop-nav">
+      {/* NAV */}
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.5rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
+        <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>RC.</span>
+        <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
           {NAV_LINKS.map(l => (
-            <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s", whiteSpace: "nowrap" }}>{l}</button>
+            <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s" }}>{l}</button>
           ))}
-          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)}>{darkMode ? "☀️ Light" : "🌙 Dark"}</button>
+          <a href="/admin" className="mono" style={{ color: "#2a2a2a", fontSize: "0.65rem" }}>admin</a>
         </div>
-
-        {/* Hamburger button - mobile only */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="hamburger-btn"
-          style={{ background: "none", border: "none", cursor: "pointer", display: "none", flexDirection: "column", gap: "5px", padding: "4px", width: "auto", alignSelf: "center" }}
-        >
-          <span style={{ display: "block", width: 22, height: 2, background: "#c9a96e", transition: "all 0.3s", transform: menuOpen ? "rotate(45deg) translate(0px, 7px)" : "none" }} />
-          <span style={{ display: "block", width: 22, height: 2, background: "#c9a96e", transition: "all 0.3s", opacity: menuOpen ? 0 : 1 }} />
-          <span style={{ display: "block", width: 22, height: 2, background: "#c9a96e", transition: "all 0.3s", transform: menuOpen ? "rotate(-45deg) translate(0px, -7px)" : "none" }} />
-        </button>
       </nav>
 
-      {/* Mobile fullscreen menu - outside nav */}
-      {menuOpen && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#080808", zIndex: 99999, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "2.5rem" }}>
-          <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300, marginBottom: "1rem" }}>Ryan S. Carbonel.</span>
-          {NAV_LINKS.map(l => (
-            <button key={l} onClick={() => { scrollTo(l); setMenuOpen(false); }} style={{ background: "none", border: "none", color: "#888", fontFamily: "'DM Mono', monospace", fontSize: "1.1rem", letterSpacing: "0.25em", textTransform: "uppercase", cursor: "pointer", textAlign: "center", padding: "0.5rem 0", transition: "color 0.3s" }}
-              onMouseEnter={e => e.target.style.color = "#c9a96e"}
-              onMouseLeave={e => e.target.style.color = "#888"}
-            >{l}</button>
-          ))}
-          <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "1px solid #333", color: "#555", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", cursor: "pointer", marginTop: "1rem", padding: "0.5rem 1.5rem" }}>✕ CLOSE</button>
-        </div>
-      )}
-
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "8rem 3rem 3rem", position: "relative", overflow: "hidden" }}>
+      {/* HERO */}
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 3rem", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 79px, #ffffff05 80px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "20%", right: "10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, #c9a96e08 0%, transparent 70%)", pointerEvents: "none" }} />
         <p className="mono gold" style={{ fontSize: "0.7rem", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase" }}>— Full Stack Developer</p>
         <h1 className="serif" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", fontWeight: 300, lineHeight: 1.05, marginBottom: "2rem", maxWidth: 800 }}>
-          Hi, I'm Ryan<br /><em style={{ fontStyle: "italic", color: "#c9a96e" }}>S. Carbonel.</em>
+          Building things<br /><em style={{ fontStyle: "italic", color: "#c9a96e" }}>for the web.</em>
         </h1>
-        <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 500, lineHeight: 1.8, marginBottom: "3rem" }}>
-          Tech-savvy innovator with hands-on experience in emerging technologies and a passion for continuous improvement.
+        <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 400, lineHeight: 1.8, marginBottom: "3rem" }}>
+          I craft full stack applications with React & Node.js — from concept to deployment.
         </p>
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "1rem" }}>
           <button className="btn" onClick={() => scrollTo("projects")}>View Work</button>
           <button className="btn" onClick={() => scrollTo("contact")} style={{ borderColor: "#333", color: "#888" }}>Say Hello →</button>
-          <a href="/cv.pdf" download className="btn" style={{ borderColor: "#c9a96e44", color: "#c9a96e88", textDecoration: "none" }}>↓ Download CV</a>
         </div>
         <div className="mono" style={{ position: "absolute", bottom: "3rem", right: "3rem", fontSize: "0.65rem", color: "#333" }}>SCROLL ↓</div>
       </div>
 
+      {/* ABOUT */}
       <Section id="about" style={{ padding: "8rem 3rem", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "5rem", alignItems: "start" }} className="about-grid">
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>
-            {/* Profile Photo */}
-            <div style={{ position: "relative" }}>
-              <img
-                src="/profile.jpg"
-                alt="Ryan S. Carbonel"
-                className="profile-photo"
-                onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
-              />
-              <div className="profile-placeholder" style={{ display: "none" }}>RC</div>
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <p className="serif gold" style={{ fontSize: "1.1rem", fontWeight: 300 }}>Ryan S. Carbonel</p>
-              <p className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.15em", marginTop: "0.3rem" }}>FULL STACK DEVELOPER</p>
-            </div>
-            {/* Skill Progress Bars */}
-            <div style={{ width: "100%" }}>
-              <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem" }}>Skills</p>
-              {[
-                { name: "React", level: 80 },
-                { name: "Node.js", level: 75 },
-                { name: "MongoDB", level: 70 },
-                { name: "JavaScript", level: 85 },
-                { name: "HTML & CSS", level: 90 },
-                { name: "REST APIs", level: 75 },
-                { name: "Git", level: 70 },
-              ].map(s => (
-                <div key={s.name} style={{ marginBottom: "0.9rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.3rem" }}>
-                    <span className="mono" style={{ fontSize: "0.65rem", color: "#888" }}>{s.name}</span>
-                    <span className="mono" style={{ fontSize: "0.65rem", color: "#555" }}>{s.level}%</span>
-                  </div>
-                  <div className="skill-bar-bg">
-                    <div style={{ width: `${s.level}%`, height: 4, borderRadius: 2, background: "linear-gradient(to right, #c9a96e, #e8c98a)", transition: "width 1.5s ease" }} />
-                  </div>
-                </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "5rem", alignItems: "start" }}>
+          <div>
+            <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
+            <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {["React", "Node.js", "Express", "MongoDB", "REST APIs", "Git", "Tailwind CSS"].map(s => (
+                <span key={s} className="tag" style={{ width: "fit-content" }}>{s}</span>
               ))}
             </div>
           </div>
           <div>
-            <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
-            <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
             <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "2rem", lineHeight: 1.2 }}>
               I build <em className="gold">meaningful</em> digital experiences.
             </h2>
             <p style={{ color: "#888", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", marginBottom: "1.5rem" }}>
-              Tech-savvy innovator with hands-on experience in emerging technologies and passion for continuous improvement. Skilled in identifying opportunities for technological enhancements and implementing effective solutions.
+              I'm a full stack developer passionate about creating clean, performant web applications. I love turning complex problems into simple, elegant solutions using modern JavaScript technologies.
             </p>
-            <p style={{ color: "#666", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", marginBottom: "2rem" }}>
-              Adept at leveraging new tools and methods to solve problems and enhance productivity. Excels in adapting to fast-paced environments and driving technological advancements. Currently open to exciting opportunities.
+            <p style={{ color: "#666", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem" }}>
+              When I'm not coding, I'm writing about tech, contributing to open source, or exploring new frameworks. Currently open to exciting opportunities.
             </p>
-            {/* Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", borderTop: "1px solid #1a1a1a", paddingTop: "2rem" }}>
-              {[{ num: "3+", label: "Projects" }, { num: "1+", label: "Years Learning" }, { num: "5+", label: "Technologies" }].map(s => (
-                <div key={s.label} style={{ textAlign: "center" }}>
-                  <p className="serif gold" style={{ fontSize: "2rem", fontWeight: 300 }}>{s.num}</p>
-                  <p className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.1em", marginTop: "0.3rem" }}>{s.label}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </Section>
 
+      {/* PROJECTS */}
       <Section id="projects" style={{ padding: "8rem 3rem", background: "#050505" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ marginBottom: "4rem" }}>
@@ -770,6 +544,7 @@ function Portfolio() {
         </div>
       </Section>
 
+      {/* BLOG */}
       <Section id="blog" style={{ padding: "8rem 3rem" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ marginBottom: "4rem" }}>
@@ -783,7 +558,7 @@ function Portfolio() {
                 <div className="skeleton" style={{ height: 12, width: "20%" }} />
               </div>
             )) : posts.map(post => (
-              <div key={post._id} className="blog-card" onClick={() => { setSelectedPost(post); window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "2rem" }}>
+              <div key={post._id} className="blog-card" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "2rem" }}>
                 <div>
                   <h3 className="serif" style={{ fontSize: "1.4rem", fontWeight: 400, marginBottom: "0.5rem" }}>{post.title}</h3>
                   <span className="mono" style={{ color: "#555", fontSize: "0.7rem" }}>{formatDate(post.createdAt)}</span>
@@ -795,11 +570,12 @@ function Portfolio() {
         </div>
       </Section>
 
+      {/* CONTACT */}
       <Section id="contact" style={{ padding: "8rem 3rem", background: "#050505" }}>
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
           <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>04 / Contact</p>
           <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "1rem" }}>Let's talk.</h2>
-          <p className="mono" style={{ color: "#555", fontSize: "0.8rem", marginBottom: "3rem", lineHeight: 1.8 }}>Open to new opportunities, collaborations, or just a good conversation about tech. Reach me at <span className="gold">ryancarbonel1984@gmail.com</span></p>
+          <p className="mono" style={{ color: "#555", fontSize: "0.8rem", marginBottom: "3rem", lineHeight: 1.8 }}>Open to new opportunities, collaborations, or just a good conversation about tech.</p>
           {sent ? (
             <div style={{ border: "1px solid #c9a96e33", padding: "2rem", textAlign: "center" }}>
               <p className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>Message sent.</p>
@@ -816,62 +592,31 @@ function Portfolio() {
             </form>
           )}
           <div style={{ marginTop: "4rem", paddingTop: "2rem", borderTop: "1px solid #1a1a1a", display: "flex", gap: "2rem" }}>
-            <a href="https://github.com/Reffin" target="_blank" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
-              onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>GitHub</a>
-            <a href="https://web.facebook.com/ryan.s.carbonel" target="_blank" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
-              onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>Facebook</a>
+            {["GitHub", "LinkedIn", "Facebook"].map(s => (
+              <a key={s} href="#" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
+                onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>{s}</a>
+            ))}
           </div>
         </div>
       </Section>
 
       <footer style={{ padding: "2rem 3rem", borderTop: "1px solid #111", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span className="mono" style={{ color: "#333", fontSize: "0.65rem" }}>© 2026 — Ryan S. Carbonel</span>
-        <span className="mono gold" style={{ fontSize: "0.65rem" }}>Connected to API ✓</span>
+        <span className="mono gold" style={{ fontSize: "0.65rem" }}>Full Stack Developer</span>
       </footer>
-
-      {/* Blog Post Detail View */}
-      {selectedPost && (
-        <div style={{ position: "fixed", inset: 0, background: darkMode ? "#080808" : "#f5f0e8", zIndex: 99999, overflowY: "auto", padding: "6rem 2rem 4rem" }}>
-          <div style={{ maxWidth: 720, margin: "0 auto" }}>
-            <button onClick={() => setSelectedPost(null)} className="mono" style={{ background: "none", border: "none", color: "#c9a96e", cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.1em", marginBottom: "3rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>← Back to Portfolio</button>
-            <p className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1rem" }}>
-              {formatDate(selectedPost.createdAt)} · {selectedPost.readTime || "5 min"} read
-            </p>
-            <h1 className="serif" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 300, lineHeight: 1.2, marginBottom: "1rem" }}>{selectedPost.title}</h1>
-            {selectedPost.tags?.length > 0 && (
-              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "3rem" }}>
-                {selectedPost.tags.map(t => <span key={t} className="tag">{t}</span>)}
-              </div>
-            )}
-            <div style={{ borderTop: "1px solid #1a1a1a", paddingTop: "3rem" }}>
-              {selectedPost.content?.split("\n").filter(p => p.trim()).map((para, i) => (
-                <p key={i} style={{ color: darkMode ? "#888" : "#444", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", marginBottom: "1.5rem" }}>{para}</p>
-              ))}
-            </div>
-            <div style={{ borderTop: "1px solid #1a1a1a", paddingTop: "2rem", marginTop: "2rem" }}>
-              <button onClick={() => setSelectedPost(null)} className="btn">← Back to Portfolio</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-// ── App Router ────────────────────────────────────────────────
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem("admin_token"));
-  const isAdmin = window.location.pathname === "/admin" ||
-                  window.location.hash === "#admin";
-  const isReset = window.location.hash.startsWith("#reset-password");
+  const isAdmin = window.location.pathname === "/admin";
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     setToken(null);
     window.location.href = "/";
   };
-
-  if (isReset) return <><style>{STYLES}</style><ResetPasswordPage /></>;
 
   if (isAdmin) {
     if (!token) return <><style>{STYLES}</style><LoginPage onLogin={setToken} /></>;
