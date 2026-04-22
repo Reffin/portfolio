@@ -464,7 +464,7 @@ function Portfolio() {
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s" }}>{l}</button>
           ))}
-          <a href="/admin" className="mono" style={{ color: "#2a2a2a", fontSize: "0.65rem" }}>admin</a>
+        
         </div>
       </nav>
 
