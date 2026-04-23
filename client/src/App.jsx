@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 
 const BASE_URL = "https://portfolio-server-l1uk.onrender.com/api";
 
+// ── Profile Picture ───────────────────────────────────────────
+// Replace this URL with your real photo when ready!
+const PROFILE_PIC = "https://ui-avatars.com/api/?name=Ryan+Carbonel&background=c9a96e&color=080808&size=200&bold=true&font-size=0.4";
+
 const authHeaders = (token) => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${token}`,
@@ -108,7 +112,15 @@ const STYLES = `
   .admin-row:hover { background: #0f0f0f; }
   .modal-overlay { position: fixed; inset: 0; background: #000000cc; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .modal { background: #0f0f0f; border: 1px solid #222; padding: 2rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
-  .blog-expanded { background: #0f0f0f; border: 1px solid #1a1a1a; padding: 1.5rem; margin-top: 1rem; }
+  .blog-expanded { background: #0f0f0f; border: 1px solid #1a1a1a; padding: 1.5rem; margin-top: 0; }
+  .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: #888; transition: all 0.3s; }
+  .mobile-menu { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #080808; z-index: 99; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; }
+  .mobile-menu.open { display: flex; }
+  @media (max-width: 768px) {
+    .desktop-nav { display: none !important; }
+    .hamburger { display: flex !important; }
+  }
 `;
 
 function useInView(ref) {
@@ -131,19 +143,13 @@ function Section({ id, children, style }) {
   );
 }
 
-// RC Avatar Component
-function RCAvatar({ size = 40 }) {
+function ProfilePic({ size = 40, style = {} }) {
   return (
-    <div style={{
-      width: size, height: size, borderRadius: "50%",
-      background: "linear-gradient(135deg, #c9a96e, #8a6a3e)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "'DM Mono', monospace", fontSize: size * 0.35,
-      color: "#080808", fontWeight: "bold", flexShrink: 0,
-      border: "2px solid #c9a96e33"
-    }}>
-      RC
-    </div>
+    <img
+      src={PROFILE_PIC}
+      alt="Ryan S. Carbonel"
+      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", border: "2px solid #c9a96e33", flexShrink: 0, ...style }}
+    />
   );
 }
 
@@ -171,7 +177,7 @@ function LoginPage({ onLogin }) {
     <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
       <div style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}>
-          <RCAvatar size={80} />
+          <ProfilePic size={80} />
         </div>
         <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem", textAlign: "center" }}>Admin Access</p>
         <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "2rem", textAlign: "center" }}>Sign In</h1>
@@ -315,7 +321,7 @@ function AdminDashboard({ token, onLogout }) {
 
       <div style={{ padding: "1.5rem 2rem", borderBottom: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <RCAvatar size={36} />
+          <ProfilePic size={36} />
           <div>
             <span className="serif gold" style={{ fontSize: "1.3rem", fontWeight: 300 }}>Admin</span>
             <span className="mono" style={{ color: "#444", fontSize: "0.65rem", marginLeft: "1rem" }}>Ryan S. Carbonel</span>
@@ -425,6 +431,7 @@ function AdminDashboard({ token, onLogout }) {
 
 function Portfolio() {
   const [activeNav, setActiveNav] = useState("about");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -450,7 +457,10 @@ function Portfolio() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMenuOpen(false);
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -469,47 +479,63 @@ function Portfolio() {
   return (
     <div style={{ background: "#080808", color: "#e8e0d5", fontFamily: "'Georgia', serif", minHeight: "100vh", overflowX: "hidden" }}>
 
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
+        <button onClick={() => setMenuOpen(false)} style={{ position: "absolute", top: "1.5rem", right: "2rem", background: "none", border: "none", color: "#888", fontSize: "1.5rem", cursor: "pointer" }}>✕</button>
+        {NAV_LINKS.map(l => (
+          <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "1rem", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer" }}>{l}</button>
+        ))}
+      </div>
+
       {/* NAV */}
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <RCAvatar size={36} />
-          <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300 }}>Ryan S. Carbonel</span>
-        </div>
-        <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
+        <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300 }}>Ryan S. Carbonel</span>
+
+        {/* Desktop Nav */}
+        <div className="desktop-nav" style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s" }}>{l}</button>
           ))}
         </div>
+
+        {/* Hamburger */}
+        <button className="hamburger" onClick={() => setMenuOpen(true)}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </nav>
 
       {/* HERO */}
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 3rem", position: "relative", overflow: "hidden" }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 2rem", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 79px, #ffffff05 80px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "20%", right: "10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, #c9a96e08 0%, transparent 70%)", pointerEvents: "none" }} />
         <p className="mono gold" style={{ fontSize: "0.7rem", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase" }}>— Full Stack Developer</p>
-        <h1 className="serif" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", fontWeight: 300, lineHeight: 1.05, marginBottom: "2rem", maxWidth: 800 }}>
+        <h1 className="serif" style={{ fontSize: "clamp(3rem, 8vw, 7rem)", fontWeight: 300, lineHeight: 1.05, marginBottom: "2rem", maxWidth: 800 }}>
           Hi, I'm <em style={{ fontStyle: "italic", color: "#c9a96e" }}>Ryan.</em>
         </h1>
         <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 400, lineHeight: 1.8, marginBottom: "3rem" }}>
           I craft full stack applications with React & Node.js — from concept to deployment.
         </p>
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <button className="btn" onClick={() => scrollTo("projects")}>View Work</button>
           <button className="btn" onClick={() => scrollTo("contact")} style={{ borderColor: "#333", color: "#888" }}>Say Hello →</button>
         </div>
-        <div className="mono" style={{ position: "absolute", bottom: "3rem", right: "3rem", fontSize: "0.65rem", color: "#333" }}>SCROLL ↓</div>
+        <div className="mono" style={{ position: "absolute", bottom: "3rem", right: "2rem", fontSize: "0.65rem", color: "#333" }}>SCROLL ↓</div>
       </div>
 
       {/* ABOUT */}
-      <Section id="about" style={{ padding: "8rem 3rem", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "5rem", alignItems: "start" }}>
+      <Section id="about" style={{ padding: "8rem 2rem", maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "clamp(200px, 30%, 300px) 1fr", gap: "4rem", alignItems: "start" }}>
           <div>
             <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
             <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
-            <div style={{ marginBottom: "2rem" }}>
-              <RCAvatar size={80} />
-              <p className="serif" style={{ fontSize: "1.1rem", marginTop: "1rem", color: "#e8e0d5" }}>Ryan S. Carbonel</p>
-              <p className="mono" style={{ fontSize: "0.65rem", color: "#666", marginTop: "0.3rem" }}>Full Stack Developer</p>
+            {/* Profile Picture */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <ProfilePic size={100} style={{ marginBottom: "1rem" }} />
+              <p className="serif" style={{ fontSize: "1.1rem", color: "#e8e0d5" }}>Ryan S. Carbonel</p>
+              <p className="mono" style={{ fontSize: "0.65rem", color: "#c9a96e", marginTop: "0.3rem" }}>Full Stack Developer</p>
+              <p className="mono" style={{ fontSize: "0.6rem", color: "#555", marginTop: "0.2rem" }}>Philippines 🇵🇭</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {["React", "Node.js", "Express", "MongoDB", "REST APIs", "Git", "Tailwind CSS"].map(s => (
@@ -518,7 +544,7 @@ function Portfolio() {
             </div>
           </div>
           <div>
-            <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "2rem", lineHeight: 1.2 }}>
+            <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "2rem", lineHeight: 1.2 }}>
               I build <em className="gold">meaningful</em> digital experiences.
             </h2>
             <p style={{ color: "#888", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", marginBottom: "1.5rem" }}>
@@ -532,13 +558,13 @@ function Portfolio() {
       </Section>
 
       {/* PROJECTS */}
-      <Section id="projects" style={{ padding: "8rem 3rem", background: "#050505" }}>
+      <Section id="projects" style={{ padding: "8rem 2rem", background: "#050505" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ marginBottom: "4rem" }}>
             <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>02 / Projects</p>
             <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300 }}>Selected Work</h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
             {loadingProjects ? [1,2,3].map(i => (
               <div key={i} style={{ border: "1px solid #1e1e1e", padding: "2rem" }}>
                 <div className="skeleton" style={{ height: 12, width: "30%", marginBottom: "1.5rem" }} />
@@ -570,7 +596,7 @@ function Portfolio() {
       </Section>
 
       {/* BLOG */}
-      <Section id="blog" style={{ padding: "8rem 3rem" }}>
+      <Section id="blog" style={{ padding: "8rem 2rem" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ marginBottom: "4rem" }}>
             <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>03 / Blog</p>
@@ -596,7 +622,7 @@ function Portfolio() {
                     <span className="mono" style={{ color: "#555", fontSize: "0.7rem" }}>{formatDate(post.createdAt)}</span>
                     {post.excerpt && <p className="mono" style={{ color: "#666", fontSize: "0.7rem", marginTop: "0.4rem" }}>{post.excerpt}</p>}
                   </div>
-                  <span className="mono gold" style={{ fontSize: "0.7rem" }}>
+                  <span className="mono gold" style={{ fontSize: "0.7rem", whiteSpace: "nowrap" }}>
                     {expandedPost === post._id ? "↑ Close" : `${post.readTime || "5 min"} read →`}
                   </span>
                 </div>
@@ -617,7 +643,7 @@ function Portfolio() {
       </Section>
 
       {/* CONTACT */}
-      <Section id="contact" style={{ padding: "8rem 3rem", background: "#050505" }}>
+      <Section id="contact" style={{ padding: "8rem 2rem", background: "#050505" }}>
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
           <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>04 / Contact</p>
           <h2 className="serif" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 300, marginBottom: "1rem" }}>Let's talk.</h2>
@@ -646,9 +672,9 @@ function Portfolio() {
         </div>
       </Section>
 
-      <footer style={{ padding: "2rem 3rem", borderTop: "1px solid #111", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <footer style={{ padding: "2rem 2rem", borderTop: "1px solid #111", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
         <span className="mono" style={{ color: "#333", fontSize: "0.65rem" }}>© 2026 — Ryan S. Carbonel</span>
-        <span className="mono gold" style={{ fontSize: "0.65rem" }}>Full Stack Developer</span>
+        <span className="mono gold" style={{ fontSize: "0.65rem" }}>Full Stack Developer 🇵🇭</span>
       </footer>
     </div>
   );
