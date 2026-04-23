@@ -78,18 +78,6 @@ async function deletePost(id, token) {
   return res.json();
 }
 
-const FALLBACK_PROJECTS = [
-  { _id: "f1", title: "E-Commerce App", tech: ["React", "Node.js", "MongoDB"], description: "Full stack store with cart, auth, and payments." },
-  { _id: "f2", title: "Weather Dashboard", tech: ["React", "API"], description: "Real-time weather with beautiful data visualizations." },
-  { _id: "f3", title: "Task Manager", tech: ["Node.js", "Express", "PostgreSQL"], description: "Productivity app with drag-and-drop task boards." },
-];
-
-const FALLBACK_POSTS = [
-  { _id: "p1", title: "How I Built My First Full Stack App", createdAt: "2026-02-12", readTime: "5 min" },
-  { _id: "p2", title: "Why I Chose React Over Vue", createdAt: "2026-01-28", readTime: "4 min" },
-  { _id: "p3", title: "MongoDB vs PostgreSQL: My Take", createdAt: "2026-01-10", readTime: "6 min" },
-];
-
 const NAV_LINKS = ["about", "projects", "blog", "contact"];
 
 const STYLES = `
@@ -120,6 +108,7 @@ const STYLES = `
   .admin-row:hover { background: #0f0f0f; }
   .modal-overlay { position: fixed; inset: 0; background: #000000cc; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 2rem; }
   .modal { background: #0f0f0f; border: 1px solid #222; padding: 2rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+  .blog-expanded { background: #0f0f0f; border: 1px solid #1a1a1a; padding: 1.5rem; margin-top: 1rem; }
 `;
 
 function useInView(ref) {
@@ -139,6 +128,22 @@ function Section({ id, children, style }) {
     <section id={id} ref={ref} style={{ opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(40px)", transition: "opacity 0.7s ease, transform 0.7s ease", ...style }}>
       {children}
     </section>
+  );
+}
+
+// RC Avatar Component
+function RCAvatar({ size = 40 }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: "50%",
+      background: "linear-gradient(135deg, #c9a96e, #8a6a3e)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: "'DM Mono', monospace", fontSize: size * 0.35,
+      color: "#080808", fontWeight: "bold", flexShrink: 0,
+      border: "2px solid #c9a96e33"
+    }}>
+      RC
+    </div>
   );
 }
 
@@ -165,8 +170,11 @@ function LoginPage({ onLogin }) {
   return (
     <div style={{ minHeight: "100vh", background: "#080808", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
       <div style={{ width: "100%", maxWidth: 400 }}>
-        <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>Admin Access</p>
-        <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "2rem" }}>Sign In</h1>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}>
+          <RCAvatar size={80} />
+        </div>
+        <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem", textAlign: "center" }}>Admin Access</p>
+        <h1 className="serif" style={{ fontSize: "2.5rem", fontWeight: 300, marginBottom: "2rem", textAlign: "center" }}>Sign In</h1>
         {error && <p className="mono" style={{ color: "#e05555", fontSize: "0.75rem", marginBottom: "1rem", padding: "0.75rem", border: "1px solid #e0555533" }}>{error}</p>}
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <input className="input" type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
@@ -306,9 +314,12 @@ function AdminDashboard({ token, onLogout }) {
       {postModal && <PostModal post={postModal === true ? null : postModal} token={token} onSave={() => { setPostModal(false); fetchAll(); }} onClose={() => setPostModal(false)} />}
 
       <div style={{ padding: "1.5rem 2rem", borderBottom: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <span className="serif gold" style={{ fontSize: "1.3rem", fontWeight: 300 }}>Admin</span>
-          <span className="mono" style={{ color: "#444", fontSize: "0.65rem", marginLeft: "1rem" }}>Portfolio Dashboard</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <RCAvatar size={36} />
+          <div>
+            <span className="serif gold" style={{ fontSize: "1.3rem", fontWeight: 300 }}>Admin</span>
+            <span className="mono" style={{ color: "#444", fontSize: "0.65rem", marginLeft: "1rem" }}>Ryan S. Carbonel</span>
+          </div>
         </div>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <a href="/" className="mono" style={{ color: "#555", fontSize: "0.7rem" }}>← View Site</a>
@@ -417,14 +428,15 @@ function Portfolio() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [projects, setProjects] = useState(FALLBACK_PROJECTS);
-  const [posts, setPosts] = useState(FALLBACK_POSTS);
+  const [projects, setProjects] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
+  const [expandedPost, setExpandedPost] = useState(null);
 
   useEffect(() => {
-    getProjects().then(data => { if (data?.length > 0) setProjects(data); }).catch(() => {}).finally(() => setLoadingProjects(false));
-    getPosts().then(data => { if (data?.length > 0) setPosts(data); }).catch(() => {}).finally(() => setLoadingPosts(false));
+    getProjects().then(data => { if (Array.isArray(data)) setProjects(data); }).catch(() => {}).finally(() => setLoadingProjects(false));
+    getPosts().then(data => { if (Array.isArray(data)) setPosts(data); }).catch(() => {}).finally(() => setLoadingPosts(false));
   }, []);
 
   useEffect(() => {
@@ -458,13 +470,15 @@ function Portfolio() {
     <div style={{ background: "#080808", color: "#e8e0d5", fontFamily: "'Georgia', serif", minHeight: "100vh", overflowX: "hidden" }}>
 
       {/* NAV */}
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.5rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
-        <span className="serif gold" style={{ fontSize: "1.5rem", fontWeight: 300 }}>RC.</span>
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, #080808ee, transparent)", backdropFilter: "blur(4px)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <RCAvatar size={36} />
+          <span className="serif gold" style={{ fontSize: "1.2rem", fontWeight: 300 }}>Ryan S. Carbonel</span>
+        </div>
         <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
           {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{ background: "none", border: "none", color: activeNav === l ? "#c9a96e" : "#666", fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "color 0.3s" }}>{l}</button>
           ))}
-        
         </div>
       </nav>
 
@@ -474,7 +488,7 @@ function Portfolio() {
         <div style={{ position: "absolute", top: "20%", right: "10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, #c9a96e08 0%, transparent 70%)", pointerEvents: "none" }} />
         <p className="mono gold" style={{ fontSize: "0.7rem", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase" }}>— Full Stack Developer</p>
         <h1 className="serif" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", fontWeight: 300, lineHeight: 1.05, marginBottom: "2rem", maxWidth: 800 }}>
-          Building things<br /><em style={{ fontStyle: "italic", color: "#c9a96e" }}>for the web.</em>
+          Hi, I'm <em style={{ fontStyle: "italic", color: "#c9a96e" }}>Ryan.</em>
         </h1>
         <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 400, lineHeight: 1.8, marginBottom: "3rem" }}>
           I craft full stack applications with React & Node.js — from concept to deployment.
@@ -492,6 +506,11 @@ function Portfolio() {
           <div>
             <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
             <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
+            <div style={{ marginBottom: "2rem" }}>
+              <RCAvatar size={80} />
+              <p className="serif" style={{ fontSize: "1.1rem", marginTop: "1rem", color: "#e8e0d5" }}>Ryan S. Carbonel</p>
+              <p className="mono" style={{ fontSize: "0.65rem", color: "#666", marginTop: "0.3rem" }}>Full Stack Developer</p>
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {["React", "Node.js", "Express", "MongoDB", "REST APIs", "Git", "Tailwind CSS"].map(s => (
                 <span key={s} className="tag" style={{ width: "fit-content" }}>{s}</span>
@@ -506,7 +525,7 @@ function Portfolio() {
               I'm a full stack developer passionate about creating clean, performant web applications. I love turning complex problems into simple, elegant solutions using modern JavaScript technologies.
             </p>
             <p style={{ color: "#666", lineHeight: 2, fontFamily: "'DM Mono', monospace", fontSize: "0.82rem" }}>
-              When I'm not coding, I'm writing about tech, contributing to open source, or exploring new frameworks. Currently open to exciting opportunities.
+              When I'm not coding, I'm exploring new frameworks and building projects. Currently open to exciting opportunities.
             </p>
           </div>
         </div>
@@ -527,16 +546,22 @@ function Portfolio() {
                 <div className="skeleton" style={{ height: 12, width: "100%", marginBottom: "0.5rem" }} />
                 <div className="skeleton" style={{ height: 12, width: "80%" }} />
               </div>
-            )) : projects.map((p, i) => (
+            )) : projects.length === 0 ? (
+              <p className="mono" style={{ color: "#444", fontSize: "0.75rem" }}>No projects yet.</p>
+            ) : projects.map((p, i) => (
               <div key={p._id} className="project-card">
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
                   <span className="mono" style={{ color: "#333", fontSize: "0.65rem" }}>0{i + 1}</span>
-                  <span className="mono gold" style={{ fontSize: "0.7rem" }}>→</span>
+                  {p.link && <a href={p.link} target="_blank" rel="noopener noreferrer" className="mono gold" style={{ fontSize: "0.7rem" }}>→</a>}
                 </div>
                 <h3 className="serif" style={{ fontSize: "1.6rem", fontWeight: 400, marginBottom: "1rem" }}>{p.title}</h3>
                 <p className="mono" style={{ color: "#666", fontSize: "0.78rem", lineHeight: 1.8, marginBottom: "1.5rem" }}>{p.description}</p>
-                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}>
                   {p.tech?.map(t => <span key={t} className="tag">{t}</span>)}
+                </div>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  {p.link && <a href={p.link} target="_blank" rel="noopener noreferrer" className="mono" style={{ color: "#c9a96e", fontSize: "0.65rem", letterSpacing: "0.1em" }}>Live Demo →</a>}
+                  {p.github && <a href={p.github} target="_blank" rel="noopener noreferrer" className="mono" style={{ color: "#555", fontSize: "0.65rem", letterSpacing: "0.1em" }}>GitHub →</a>}
                 </div>
               </div>
             ))}
@@ -557,13 +582,34 @@ function Portfolio() {
                 <div className="skeleton" style={{ height: 20, width: "50%", marginBottom: "0.5rem" }} />
                 <div className="skeleton" style={{ height: 12, width: "20%" }} />
               </div>
-            )) : posts.map(post => (
-              <div key={post._id} className="blog-card" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "2rem" }}>
-                <div>
-                  <h3 className="serif" style={{ fontSize: "1.4rem", fontWeight: 400, marginBottom: "0.5rem" }}>{post.title}</h3>
-                  <span className="mono" style={{ color: "#555", fontSize: "0.7rem" }}>{formatDate(post.createdAt)}</span>
+            )) : posts.length === 0 ? (
+              <p className="mono" style={{ color: "#444", fontSize: "0.75rem" }}>No posts yet.</p>
+            ) : posts.map(post => (
+              <div key={post._id}>
+                <div
+                  className="blog-card"
+                  onClick={() => setExpandedPost(expandedPost === post._id ? null : post._id)}
+                  style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "2rem" }}
+                >
+                  <div>
+                    <h3 className="serif" style={{ fontSize: "1.4rem", fontWeight: 400, marginBottom: "0.5rem" }}>{post.title}</h3>
+                    <span className="mono" style={{ color: "#555", fontSize: "0.7rem" }}>{formatDate(post.createdAt)}</span>
+                    {post.excerpt && <p className="mono" style={{ color: "#666", fontSize: "0.7rem", marginTop: "0.4rem" }}>{post.excerpt}</p>}
+                  </div>
+                  <span className="mono gold" style={{ fontSize: "0.7rem" }}>
+                    {expandedPost === post._id ? "↑ Close" : `${post.readTime || "5 min"} read →`}
+                  </span>
                 </div>
-                <span className="mono gold" style={{ fontSize: "0.7rem" }}>{post.readTime || "5 min"} read →</span>
+                {expandedPost === post._id && (
+                  <div className="blog-expanded">
+                    <p className="mono" style={{ color: "#888", fontSize: "0.82rem", lineHeight: 2, whiteSpace: "pre-wrap" }}>{post.content}</p>
+                    {post.tags?.length > 0 && (
+                      <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", flexWrap: "wrap" }}>
+                        {post.tags.map(t => <span key={t} className="tag">{t}</span>)}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
