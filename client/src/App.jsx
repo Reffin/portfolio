@@ -526,7 +526,7 @@ function Portfolio() {
 
       {/* ABOUT */}
       <Section id="about" style={{ padding: "8rem 2rem", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "clamp(200px, 30%, 300px) 1fr", gap: "4rem", alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "4rem", alignItems: "start" }}>
           <div>
             <p className="mono gold" style={{ fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>01 / About</p>
             <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
