@@ -4,7 +4,7 @@ const BASE_URL = "https://portfolio-server-l1uk.onrender.com/api";
 
 // ── Profile Picture ───────────────────────────────────────────
 // Replace this URL with your real photo when ready!
-const PROFILE_PIC = "https://res.cloudinary.com/donktjrk0/image/upload/v1777354911/IMG20260428132236_w8ou5q.jpg";
+const PROFILE_PIC = "https://ui-avatars.com/api/?name=Ryan+Carbonel&background=c9a96e&color=080808&size=200&bold=true&font-size=0.4";
 
 const authHeaders = (token) => ({
   "Content-Type": "application/json",
@@ -664,9 +664,13 @@ function Portfolio() {
             </form>
           )}
           <div style={{ marginTop: "4rem", paddingTop: "2rem", borderTop: "1px solid #1a1a1a", display: "flex", gap: "2rem" }}>
-            {["GitHub", "LinkedIn", "Facebook"].map(s => (
-              <a key={s} href="#" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
-                onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>{s}</a>
+            {[
+              { name: "GitHub", url: "https://github.com/Reffin" },
+              { name: "LinkedIn", url: "https://www.linkedin.com/in/ryan-carbonel-a2240b1a0" },
+              { name: "Facebook", url: "https://www.facebook.com/ryan.s.carbonel" },
+            ].map(s => (
+              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="mono" style={{ color: "#444", fontSize: "0.7rem", letterSpacing: "0.1em", transition: "color 0.3s" }}
+                onMouseEnter={e => e.target.style.color = "#c9a96e"} onMouseLeave={e => e.target.style.color = "#444"}>{s.name}</a>
             ))}
           </div>
         </div>
