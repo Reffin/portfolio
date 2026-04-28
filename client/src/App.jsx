@@ -4,7 +4,7 @@ const BASE_URL = "https://portfolio-server-l1uk.onrender.com/api";
 
 // ── Profile Picture ───────────────────────────────────────────
 // Replace this URL with your real photo when ready!
-const PROFILE_PIC = "https://ui-avatars.com/api/?name=Ryan+Carbonel&background=c9a96e&color=080808&size=200&bold=true&font-size=0.4";
+const PROFILE_PIC = "https://res.cloudinary.com/donktjrk0/image/upload/v1777354911/IMG20260428132236_w8ou5q.jpg";
 
 const authHeaders = (token) => ({
   "Content-Type": "application/json",
