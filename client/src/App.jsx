@@ -532,7 +532,7 @@ function Portfolio() {
             <div style={{ width: 40, height: 1, background: "#c9a96e", marginBottom: "2rem" }} />
             {/* Profile Picture */}
             <div style={{ marginBottom: "1.5rem" }}>
-              <ProfilePic size={100} style={{ marginBottom: "1rem" }} />
+              <ProfilePic size={150} style={{ marginBottom: "1rem" }} />
               <p className="serif" style={{ fontSize: "1.1rem", color: "#e8e0d5" }}>Ryan S. Carbonel</p>
               <p className="mono" style={{ fontSize: "0.65rem", color: "#c9a96e", marginTop: "0.3rem" }}>Full Stack Developer</p>
               <p className="mono" style={{ fontSize: "0.6rem", color: "#555", marginTop: "0.2rem" }}>Philippines 🇵🇭</p>
