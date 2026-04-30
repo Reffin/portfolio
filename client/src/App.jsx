@@ -517,10 +517,15 @@ function Portfolio() {
         <p style={{ fontFamily: "'DM Mono', monospace", color: "#555", fontSize: "0.85rem", maxWidth: 400, lineHeight: 1.8, marginBottom: "3rem" }}>
           I craft full stack applications with React & Node.js — from concept to deployment.
         </p>
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-          <button className="btn" onClick={() => scrollTo("projects")}>View Work</button>
-          <button className="btn" onClick={() => scrollTo("contact")} style={{ borderColor: "#333", color: "#888" }}>Say Hello →</button>
-        </div>
+       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+  <button className="btn" onClick={() => scrollTo("projects")}>View Work</button>
+  <button className="btn" onClick={() => scrollTo("contact")} style={{ borderColor: "#333", color: "#888" }}>Say Hello →</button>
+  <a href="/cv.pdf" download="Ryan_Carbonel_CV.pdf" style={{ display: "inline-block", background: "transparent", border: "1px solid #555", color: "#aaa", padding: "0.7rem 2rem", fontFamily: "'DM Mono', monospace", fontSize: "0.75rem", letterSpacing: "0.15em", cursor: "pointer", textDecoration: "none", transition: "background 0.3s, color 0.3s" }}
+    onMouseEnter={e => { e.target.style.background = "#555"; e.target.style.color = "#080808"; }}
+    onMouseLeave={e => { e.target.style.background = "transparent"; e.target.style.color = "#aaa"; }}>
+    Download CV ↓
+  </a>
+</div>
         <div className="mono" style={{ position: "absolute", bottom: "3rem", right: "2rem", fontSize: "0.65rem", color: "#333" }}>SCROLL ↓</div>
       </div>
 
